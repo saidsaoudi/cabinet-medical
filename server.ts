@@ -13,18 +13,26 @@ const SUPABASE_KEY =
   process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   '';
 
-let supabase: any = null;
+let supabaseClient: any = null;
 if (SUPABASE_URL && SUPABASE_KEY) {
   try {
-    supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false }
     });
   } catch (e) {
     console.error("Failed to initialize Supabase client:", e);
   }
-} else {
-  console.warn("WARNING: Supabase URL or Key is missing. Database operations will fail.");
 }
+
+// Export a proxy so we get a clear error if we try to use the DB without env vars
+const supabase = new Proxy({}, {
+  get: (target, prop) => {
+    if (!supabaseClient) {
+      throw new Error(`ERREUR CRITIQUE: Les variables d'environnement Supabase (SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY) sont manquantes sur Vercel. Impossible de communiquer avec la base de données.`);
+    }
+    return supabaseClient[prop];
+  }
+});
 
 // ============================================================
 // CONFIG
