@@ -14,9 +14,18 @@ const SUPABASE_KEY =
   process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   '';
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: false }
-});
+let supabase: any = null;
+if (SUPABASE_URL && SUPABASE_KEY) {
+  try {
+    supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false }
+    });
+  } catch (e) {
+    console.error("Failed to initialize Supabase client:", e);
+  }
+} else {
+  console.warn("WARNING: Supabase URL or Key is missing. Database operations will fail.");
+}
 
 // ============================================================
 // CONFIG
