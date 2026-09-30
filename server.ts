@@ -25,11 +25,10 @@ const isProd = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 3000;
 const DOCTOR_TOKEN = 'alami_doctor_token_2026';
 
-async function startServer() {
-  const app = express();
-  app.use(express.json());
+const app = express();
+app.use(express.json());
 
-  // Doctor Auth Middleware
+// Doctor Auth Middleware
   const requireDoctorAuth = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ') && authHeader.split('Bearer ')[1] === DOCTOR_TOKEN) {
@@ -431,40 +430,45 @@ async function startServer() {
   });
 
   // -------------------------------------------------------------
-  // VITE OR STATIC ASSETS
+  // VITE OR STATIC ASSETS (Only run locally)
   // -------------------------------------------------------------
-  if (!isProd) {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'custom',
-    });
-    app.use(vite.middlewares);
+  if (process.env.VERCEL !== '1') {
+    if (!isProd) {
+      // Use dynamic import so Vercel doesn't fail trying to bundle vite
+      import('vite').then(async ({ createServer: createViteServer }) => {
+        const vite = await createViteServer({
+          server: { middlewareMode: true },
+          appType: 'custom',
+        });
+        app.use(vite.middlewares);
 
-    app.use('*', async (req, res, next) => {
-      const url = req.originalUrl;
-      // Skip API routes
-      if (url.startsWith('/api')) {
-        return next();
-      }
-      try {
-        let template = fs.readFileSync(path.resolve('./index.html'), 'utf-8');
-        template = await vite.transformIndexHtml(url, template);
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-      } catch (e) {
-        vite.ssrFixStacktrace(e as Error);
-        next(e);
-      }
-    });
-  } else {
-    app.use(express.static(path.resolve('./dist')));
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve('./dist/index.html'));
-    });
+        app.use('*', async (req, res, next) => {
+          const url = req.originalUrl;
+          if (url.startsWith('/api')) return next();
+          try {
+            let template = fs.readFileSync(path.resolve('./index.html'), 'utf-8');
+            template = await vite.transformIndexHtml(url, template);
+            res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+          } catch (e) {
+            vite.ssrFixStacktrace(e as Error);
+            next(e);
+          }
+        });
+        
+        app.listen(PORT, () => {
+          console.log(`Server is running at http://localhost:${PORT}`);
+        });
+      });
+    } else {
+      app.use(express.static(path.resolve('./dist')));
+      app.get('*', (req, res) => {
+        res.sendFile(path.resolve('./dist/index.html'));
+      });
+      
+      app.listen(PORT, () => {
+        console.log(`Server is running at http://localhost:${PORT}`);
+      });
+    }
   }
 
-  app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
-  });
-}
-
-startServer();
+export default app;
