@@ -1,10 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
-import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 
-dotenv.config();
+// dotenv is only needed locally — Vercel injects env vars automatically
+try { require('dotenv').config(); } catch (_e) { /* ignore on Vercel */ }
+
 
 // ============================================================
 // SUPABASE CLIENT (Server-side — bypasses RLS with service key)
