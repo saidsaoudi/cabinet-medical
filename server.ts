@@ -15,8 +15,8 @@ import {
   BlockedDate,
   DoctorConfig,
   SmsLog
-} from './src/db/localDb';
-import { smsService } from './src/lib/sms';
+} from './src/db/localDb.js';
+import { smsService } from './src/lib/sms.js';
 
 // Initialize local JSON DB on startup (wrap in try-catch for Serverless environments)
 try {
