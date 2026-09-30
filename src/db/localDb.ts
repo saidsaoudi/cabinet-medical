@@ -1,15 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-let DB_DIR = path.resolve('./data');
-if (process.env.VERCEL || process.env.AWS_REGION || !fs.existsSync(DB_DIR)) {
-  try {
-    if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
-  } catch (e) {
-    DB_DIR = '/tmp/data';
-  }
-}
-let DB_FILE = path.join(DB_DIR, 'db.json');
+// On Vercel (and other serverless platforms), the filesystem is read-only
+// except for /tmp. We detect this and use /tmp/data for the DB.
+const IS_SERVERLESS = !!(process.env.VERCEL || process.env.VERCEL_ENV || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DB_DIR = IS_SERVERLESS ? '/tmp/data' : path.resolve('./data');
+const DB_FILE = path.join(DB_DIR, 'db.json');
+
 
 // Types for our local database
 export interface Appointment {
@@ -238,10 +235,7 @@ export async function writeDb(data: DbSchema): Promise<void> {
     if (!fs.existsSync(DB_DIR)) {
       fs.mkdirSync(DB_DIR, { recursive: true });
     }
-    // Standard secure swap write
-    const tempFile = DB_FILE + '.tmp';
-    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
-    fs.renameSync(tempFile, DB_FILE);
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
   } catch (error) {
     console.error("Failed to write to database:", error);
     throw new Error("Erreur d'écriture dans la base de données.");

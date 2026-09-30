@@ -9,9 +9,9 @@ import ScrollReveal from './components/ScrollReveal.tsx';
 import { Calendar, Phone, Clock, ShieldCheck, CheckCircle2, ChevronRight, RefreshCw, Activity, CheckCircle, AlertCircle, MapPin, Mail, ExternalLink } from 'lucide-react';
 
 // Dynamic Image Paths
-const CABINET_HERO = '/src/assets/images/cabinet_interior_1790767908854.jpg';
-const DOCTOR_PORTRAIT = '/src/assets/images/doctor_profile_portrait_1790767897555.jpg';
-const ALLERGOLOGY_IMAGE = '/src/assets/images/allergology_testing_1790767920493.jpg';
+import CABINET_HERO from './assets/images/cabinet_interior_1790767908854.jpg';
+import DOCTOR_PORTRAIT from './assets/images/doctor_profile_portrait_1790767897555.jpg';
+import ALLERGOLOGY_IMAGE from './assets/images/allergology_testing_1790767920493.jpg';
 
 export default function App() {
   const [currentPath, setCurrentPath] = React.useState(window.location.pathname);
@@ -489,9 +489,7 @@ export default function App() {
                         alt="Dr. Sofia El Alami - Allergologue & Gériatre Casablanca" 
                         className="object-cover w-full h-full"
                         referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1594824813573-246434e33963?q=80&w=800"; // fallback
-                        }}
+
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end p-6 text-white">
                         <div>
