@@ -1,0 +1,6 @@
+{
+  "name": "Cabinet Médical Casablanca - Dr. El Alami",
+  "description": "Cabinet médical d'Allergologie, Gériatrie et Médecine Générale à Casablanca. Prenez rendez-vous en ligne.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
