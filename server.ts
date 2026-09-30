@@ -1,10 +1,8 @@
+import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
-
-// dotenv is only needed locally — Vercel injects env vars automatically
-try { require('dotenv').config(); } catch (_e) { /* ignore on Vercel */ }
 
 
 // ============================================================
