@@ -1,9 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 
-const isVercel = process.env.VERCEL === '1';
-const DB_DIR = isVercel ? '/tmp/data' : path.resolve('./data');
-const DB_FILE = path.join(DB_DIR, 'db.json');
+let DB_DIR = path.resolve('./data');
+if (process.env.VERCEL || process.env.AWS_REGION || !fs.existsSync(DB_DIR)) {
+  try {
+    if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+  } catch (e) {
+    DB_DIR = '/tmp/data';
+  }
+}
+let DB_FILE = path.join(DB_DIR, 'db.json');
 
 // Types for our local database
 export interface Appointment {

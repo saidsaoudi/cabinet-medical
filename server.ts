@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { createServer as createViteServer } from 'vite';
+
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
@@ -15,11 +15,15 @@ import {
   BlockedDate,
   DoctorConfig,
   SmsLog
-} from './src/db/localDb.ts';
-import { smsService } from './src/lib/sms.ts';
+} from './src/db/localDb';
+import { smsService } from './src/lib/sms';
 
-// Initialize local JSON DB on startup
-initDb();
+// Initialize local JSON DB on startup (wrap in try-catch for Serverless environments)
+try {
+  initDb();
+} catch (e) {
+  console.error("Warning: Could not initialize local DB on startup", e);
+}
 
 const isProd = process.env.NODE_ENV === 'production';
 const PORT = process.env.PORT || 3000;
