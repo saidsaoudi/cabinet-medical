@@ -3,7 +3,7 @@ import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
-
+import apiRouter from './src/apiRouter.ts';
 dotenv.config();
 
 import {
@@ -42,7 +42,6 @@ async function startServer() {
   // -------------------------------------------------------------
   // API ROUTES
   // -------------------------------------------------------------
-  import apiRouter from './src/apiRouter.ts';
   app.use('/api', apiRouter);
 
   // -------------------------------------------------------------
