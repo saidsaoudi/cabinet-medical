@@ -1,4 +1,4 @@
-import { DbSchema, Appointment, SmsLog, writeDb, readDb } from '../db/localDb.js';
+import { DbSchema, Appointment, SmsLog, writeDb, readDb } from '../db/localDb.ts';
 
 export interface SMSService {
   sendAppointmentConfirmed(appointment: Appointment): Promise<SmsLog>;
